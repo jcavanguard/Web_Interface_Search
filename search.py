@@ -51,8 +51,8 @@ class Selenium_Web_Capture:
                 for line in contents:
                     line = line.strip()
                     line = line.split(',')
-                    url1_pt = 'http://{0}:{1}'.format(line[0], line[1])
-                    url1_ct = 'https://{0}:{1}'.format(line[0], line[1])
+                    url_pt = 'http://{0}:{1}'.format(line[0], line[1])
+                    url_ct = 'https://{0}:{1}'.format(line[0], line[1])
                     urls.append(url_pt)
                     urls.append(url_ct)
                 contents.close()

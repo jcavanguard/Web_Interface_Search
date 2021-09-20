@@ -49,10 +49,18 @@ class Selenium_Web_Capture:
             try:
                 contents = open(str(self.urls), 'r')
                 for line in contents:
-                    line = line.strip()
+                    line = str(line.strip())
                     line = line.split(',')
-                    url_pt = 'http://{0}:{1}'.format(line[0], line[1])
-                    url_ct = 'https://{0}:{1}'.format(line[0], line[1])
+                    domain=line[0].strip()
+                    port=line[1].strip()
+                    if port == '443':
+                        url_ct = 'https://{0}'.format(domain)
+                    else:
+                        url_ct = 'https://{0}:{1}'.format(domain, port)
+                    if port == '80':
+                        url_pt = 'http://{0}'.format(domain)
+                    else:
+                        url_pt = 'http://{0}:{1}'.format(domain, port)
                     urls.append(url_pt)
                     urls.append(url_ct)
                 contents.close()
@@ -60,7 +68,6 @@ class Selenium_Web_Capture:
                     freeze_support()
                     pool = Pool(processes=16)
                     for url in urls:
-                        print(url)
                         pool.apply_async(self.capture(url))
                 else:
                     for url in self.urls:
@@ -71,6 +78,7 @@ class Selenium_Web_Capture:
 
     def capture(self, url: str):
         """Attempts to capture information at the assigned URL."""
+        print(str("Working on {0}".format(url)))
         domain = self.parse_url(url)
         try:
             self.driver.get(url)
@@ -83,7 +91,7 @@ class Selenium_Web_Capture:
         else:
             print("Exited normally, bad thread; restarting.")
 
-    def driver_setup(self, timeout=4500):
+    def driver_setup(self, timeout=6500):
         """Initializes the selenium driver for the current use case."""
         # TODO: Add implementation for other web browsers.
         options = None
@@ -93,11 +101,16 @@ class Selenium_Web_Capture:
             if self.environment == 'headless':
                 options.add_argument("--headless")
             driver = webdriver.Firefox(options=options)
-        if not os.path.exists(os.path.dirname('./tmp')):
+        dataPath = "{0}/{1}".format(os.path.abspath(os.path.curdir), "tmp")
+        print("Your shizle is in {0}".format(dataPath))
+        if not os.path.exists(dataPath):
             try:
-                os.makedirs(os.path.dirname('./tmp'))
+                os.makedirs(dataPath)
             except OSError as exc:
                 print("Read/write access to this directory is required.")
+                sys.exit(0)
+            except Exception:
+                print("Something else")
                 sys.exit(0)
         driver.implicitly_wait(timeout/1000.0)
         return driver

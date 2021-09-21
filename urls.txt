@@ -1,3 +1,0 @@
-postgresql.org,443
-google.com,443
-wikipedia.org,6000

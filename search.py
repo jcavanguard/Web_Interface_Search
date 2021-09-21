@@ -55,14 +55,16 @@ class Selenium_Web_Capture:
                     port=line[1].strip()
                     if port == '443':
                         url_ct = 'https://{0}'.format(domain)
+                        urls.append(url_ct)
                     else:
                         url_ct = 'https://{0}:{1}'.format(domain, port)
+                        urls.append(url_ct)
                     if port == '80':
                         url_pt = 'http://{0}'.format(domain)
+                        urls.append(url_pt)
                     else:
                         url_pt = 'http://{0}:{1}'.format(domain, port)
-                    urls.append(url_pt)
-                    urls.append(url_ct)
+                        urls.append(url_pt)
                 contents.close()
                 if Pool:
                     freeze_support()
@@ -87,7 +89,9 @@ class Selenium_Web_Capture:
         except OSError as exc:
             print("The connection to {0} has produced the following error: {1}".format(url, exc))
         except WebDriverException as exc:
-            print("The connection to {0} has timed out. More information available here: {1}".format(url, exc))
+            message = exc.msg.replace('%20',' ')
+            message = message.replace('%3A',':')
+            print("The connection to {0} has timed out. More information available here: {1}".format(url, message))
         else:
             print("Exited normally, bad thread; restarting.")
 
